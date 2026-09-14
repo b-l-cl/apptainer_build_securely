@@ -20,25 +20,26 @@ jobs:
         apptainer-version: 1.3.0
         enable-fakeroot: true
 
-    # 3. Build step (Outputs your standard SIF container file)
-    - name: Build Verified Python Container
+    # 3. Build Step: Compile into an open sandbox directory instead of a binary file
+    - name: Build Verified Python Container Sandbox
       run: |
         sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
-        apptainer build --fakeroot python-env.sif python-env.def
+        apptainer build --fakeroot --sandbox python-env-sandbox python-env.def
 
-    # New Step: Natively export the SIF into a true OCI Tar archive file
-    - name: Export SIF to Docker OCI Tarball
-      run: |
-        apptainer image export python-docker.tar python-env.sif
-
-    # 4. The Security Appraisal: Scan the true tarball input
+    # 4. The Security Appraisal: Scan the local file system structure natively
     - name: Security Scan (Appraisal)
       uses: aquasecurity/trivy-action@master
       with:
-        input: 'python-docker.tar'
-        scan-type: 'image'
+        scan-type: 'fs'              # 👈 Change to 'fs' to scan local folders
+        image-ref: 'python-env-sandbox' # 👈 Point it right at your sandbox directory
         severity: 'CRITICAL,HIGH'
         format: 'table'
+
+    # 5. Production Step: Compress the sandbox back into your final SIF image for signing
+    - name: Compress Sandbox to Final SIF File
+      if: success()
+      run: |
+        apptainer build --fakeroot python-env.sif python-env-sandbox
 
     # 5. Cryptographically sign the verified image
     - name: Sign Container Image
