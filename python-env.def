@@ -1,9 +1,11 @@
 Bootstrap: docker
 From: python:3.11-slim
 
+%files
+    requirements.txt /opt/requirements.txt
+
 %post
-    # This step executes inside the isolated sandbox
-    pip install --no-cache-dir requests pandas openpyxl
+    pip install --no-cache-dir -r /opt/requirements.txt
 
 %runscript
     python "$@"
