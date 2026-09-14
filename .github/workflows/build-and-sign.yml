@@ -44,7 +44,7 @@ jobs:
       with:
         scan-type: 'fs'
         # ⚠️ Adjust the path below if your python version is different (e.g., python3.11)
-        image-ref: 'python-env-sandbox/usr/local/lib/python3.11/site-packages'
+        image-ref: 'python-env-sandbox/opt' 
         severity: 'CRITICAL,HIGH'
         format: 'table'
 
