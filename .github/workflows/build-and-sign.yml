@@ -21,11 +21,11 @@ jobs:
         enable-fakeroot: true
 
     # 3. Secure isolated build phase
-    - name: Build Apptainer SIF File
+    - name: Build Verified Python Container
       run: |
-        # 1. Disable Ubuntu's AppArmor restriction on unprivileged user namespaces
         sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
-        apptainer build --fakeroot python-env.sif python-env.def
+        # Build directly to a docker-archive tar file
+        apptainer build --fakeroot python-docker.tar python-env.def
 
     # New Step: Unpack the SIF container to a local directory for scanning
     - name: Unpack Apptainer Image for Scanner
@@ -33,13 +33,12 @@ jobs:
         mkdir unpacked-image
         apptainer singularity image export python-env.sif | tar -C unpacked-image -xf -
 
-        
-    # 4. The Security Appraisal: Scan the container for malware/vulnerabilities
+    # 4. The Security Appraisal: Scan the container archive
     - name: Security Scan (Appraisal)
       uses: aquasecurity/trivy-action@master
       with:
-        image-ref: 'unpacked-image'
-        scan-type: 'rootfs'
+        image-ref: 'python-docker.tar'
+        scan-type: 'image'
         severity: 'CRITICAL,HIGH'
         format: 'table'
 
