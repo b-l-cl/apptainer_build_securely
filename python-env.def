@@ -1,0 +1,9 @@
+Bootstrap: docker
+From: python:3.11-slim
+
+  %post
+      # This step executes inside the isolated sandbox
+      pip install --no-cache-dir requests pandas openpyxl
+
+  %runscript
+      python "$@"
