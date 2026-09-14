@@ -30,7 +30,7 @@ jobs:
     - name: Security Scan (Appraisal)
       uses: aquasecurity/trivy-action@master
       with:
-        image-ref: 'python-docker.tar'
+        input: 'python-docker.tar'
         scan-type: 'image'
         severity: 'CRITICAL,HIGH'
         format: 'table'
