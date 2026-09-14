@@ -41,11 +41,13 @@ jobs:
       if: success()
       run: |
         echo "${{ secrets.APP_SIGNING_KEY }}" > private_key.asc
-        # Import and sign using your key password if you have one
-        apptainer key import private_key.asc
-        
-        # Pass the secret passphrase automatically to sign the image
-        echo "${{ secrets.APP_SIGNING_PASSPHRASE }}" | apptainer sign --passphrase python-env.sif
+
+        # 1. Pipe the passphrase to verify and authorize the key import
+        echo "${{ secrets.APP_SIGNING_PASSPHRASE }}" | apptainer key import private_key.asc
+
+        # 2. Pipe the passphrase to sign the container
+        echo "${{ secrets.APP_SIGNING_PASSPHRASE }}" | apptainer sign python-env.sif
+
         rm private_key.asc
 
     # 6. Upload the clean, verified artifact so you can safely use it
