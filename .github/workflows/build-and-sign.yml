@@ -20,13 +20,18 @@ jobs:
         apptainer-version: 1.3.0
         enable-fakeroot: true
 
-    # 3. Build step (Ensure your build command outputs 'python-docker.tar' instead of '.sif')
+    # 3. Build step (Outputs your standard SIF container file)
     - name: Build Verified Python Container
       run: |
         sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
-        apptainer build --fakeroot python-docker.tar python-env.def
+        apptainer build --fakeroot python-env.sif python-env.def
 
-    # 4. The Security Appraisal: Scan the container archive directly
+    # New Step: Natively export the SIF into a true OCI Tar archive file
+    - name: Export SIF to Docker OCI Tarball
+      run: |
+        apptainer image export python-docker.tar python-env.sif
+
+    # 4. The Security Appraisal: Scan the true tarball input
     - name: Security Scan (Appraisal)
       uses: aquasecurity/trivy-action@master
       with:
