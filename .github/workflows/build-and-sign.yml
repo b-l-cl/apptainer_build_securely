@@ -20,20 +20,13 @@ jobs:
         apptainer-version: 1.3.0
         enable-fakeroot: true
 
-    # 3. Secure isolated build phase
+    # 3. Build step (Ensure your build command outputs 'python-docker.tar' instead of '.sif')
     - name: Build Verified Python Container
       run: |
         sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
-        # Build directly to a docker-archive tar file
         apptainer build --fakeroot python-docker.tar python-env.def
 
-    # New Step: Unpack the SIF container to a local directory for scanning
-    - name: Unpack Apptainer Image for Scanner
-      run: |
-        mkdir unpacked-image
-        apptainer singularity image export python-env.sif | tar -C unpacked-image -xf -
-
-    # 4. The Security Appraisal: Scan the container archive
+    # 4. The Security Appraisal: Scan the container archive directly
     - name: Security Scan (Appraisal)
       uses: aquasecurity/trivy-action@master
       with:
