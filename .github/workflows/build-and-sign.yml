@@ -23,6 +23,8 @@ jobs:
     # 3. Secure isolated build phase
     - name: Build Apptainer SIF File
       run: |
+        # 1. Disable Ubuntu's AppArmor restriction on unprivileged user namespaces
+        sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
         apptainer build --fakeroot python-env.sif python-env.def
 
     # 4. The Security Appraisal: Scan the container for malware/vulnerabilities
