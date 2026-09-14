@@ -27,11 +27,18 @@ jobs:
         sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
         apptainer build --fakeroot python-env.sif python-env.def
 
+    # New Step: Unpack the SIF container to a local directory for scanning
+    - name: Unpack Apptainer Image for Scanner
+      run: |
+        mkdir unpacked-image
+        apptainer singularity image export python-env.sif | tar -C unpacked-image -xf -
+
+        
     # 4. The Security Appraisal: Scan the container for malware/vulnerabilities
     - name: Security Scan (Appraisal)
       uses: aquasecurity/trivy-action@master
       with:
-        image-ref: 'python-env.sif'
+        image-ref: 'unpacked-image'
         scan-type: 'rootfs'
         severity: 'CRITICAL,HIGH'
         format: 'table'
