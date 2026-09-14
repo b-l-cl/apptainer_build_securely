@@ -5,6 +5,8 @@ From: python:3.11-slim
     requirements.txt /opt/requirements.txt
 
 %post
+    # Automatically upgrade system packages to clear base image security vulnerabilities
+    apt-get update && apt-get upgrade -y
     pip install --no-cache-dir -r /opt/requirements.txt
 
 %runscript

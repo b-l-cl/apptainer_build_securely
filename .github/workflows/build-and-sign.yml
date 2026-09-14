@@ -34,6 +34,8 @@ jobs:
         image-ref: 'python-env-sandbox' # 👈 Point it right at your sandbox directory
         severity: 'CRITICAL,HIGH'
         format: 'table'
+        # Add this line to force Trivy to scan the entire tree including your /opt manifests
+        vuln-type: 'os,library'
 
     # 5. Production Step: Compress the sandbox back into your final SIF image for signing
     - name: Compress Sandbox to Final SIF File
