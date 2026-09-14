@@ -15,7 +15,7 @@ jobs:
 
     # 2. Automatically install Apptainer into the runner environment
     - name: Setup Apptainer
-      uses: eWaterCycle/setup-apptainer@v3
+      uses: eWaterCycle/setup-apptainer@v2
       with:
         apptainer-version: 1.3.0
 
