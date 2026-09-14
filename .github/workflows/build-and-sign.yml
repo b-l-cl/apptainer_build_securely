@@ -34,8 +34,19 @@ jobs:
         image-ref: 'python-env-sandbox' # 👈 Point it right at your sandbox directory
         severity: 'CRITICAL,HIGH'
         format: 'table'
+        iignore-unfixed: true   # 👈 Add this line to hide unpatchable vendor issues
         # Add this line to force Trivy to scan the entire tree including your /opt manifests
         vuln-type: 'os,library'
+
+    # 4b. Scan the Python Environment explicitly
+    - name: Security Scan (Python Libraries)
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        # ⚠️ Adjust the path below if your python version is different (e.g., python3.11)
+        image-ref: 'python-env-sandbox/usr/local/lib/python3.11/site-packages'
+        severity: 'CRITICAL,HIGH'
+        format: 'table'
 
     # 5. Production Step: Compress the sandbox back into your final SIF image for signing
     - name: Compress Sandbox to Final SIF File
