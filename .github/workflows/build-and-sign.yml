@@ -44,7 +44,7 @@ jobs:
       with:
         scan-type: 'fs'
         # ⚠️ Adjust the path below if your python version is different (e.g., python3.11)
-        image-ref: 'requirements.txt' 
+        image-ref: '.' 
         severity: 'CRITICAL,HIGH'
         format: 'table'
 
